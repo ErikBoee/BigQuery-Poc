@@ -6,7 +6,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const port = 8000;
+const port = process.env.port ? parseInt(process.env.port) : 8080;
 
 app.use(cors()); // Use this after the variable declaration
 app.use(express.json());

@@ -31,7 +31,6 @@ async function processXlsxFile(filePath: string): Promise<void> {
 
   // Convert the XLSX data into an array of objects with the schema's field names
   const transformedData = jsonData.slice(1).map((row: (string | number)[]) => {
-    console.log(row);
     const dataObject: Record<string, string | number> = {};
     schema.forEach((field, index) => {
       dataObject[field.name] = row[index];
