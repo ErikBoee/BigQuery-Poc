@@ -14,7 +14,6 @@ import {
   TablePagination,
   TableRow,
   TextField,
-  Typography,
   debounce,
 } from "@mui/material";
 import axios from "axios";
@@ -183,9 +182,7 @@ const DataTable = () => {
               ))}
             </Select>
           </FormControl>
-        ) : (
-          <Typography>loading...</Typography>
-        )}
+        ) : null}
       </Stack>
       {data && columns ? (
         <Paper>
