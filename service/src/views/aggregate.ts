@@ -1,35 +1,35 @@
-import express, { Request, Response } from "express";
+import { Request, Response } from "express";
 import { BigQuery } from "@google-cloud/bigquery";
-import { getQuery } from "./queryHelpers";
+import { getAggregateQuery } from "./queryHelpers";
 
-type Filter = {
-  field: string;
-  values: string[];
-};
-type DateType = { value: string };
-
-export interface TableRequest {
-  page: number;
-  pageSize: number;
-  searchTerm?: string;
-  filters?: Filter[];
+export interface AggregateRequest {
+  size: number;
+  aggregateBy: string[];
+  groupBy: string[];
+  sortOrder: "ASC" | "DESC";
+  sortIndex: number;
 }
+
 export interface TableResponse {
-  data: Record<string, string | number | DateType>[];
+  data: any[];
 }
 
 export const PROJECT_ID = "hackathon-poc-bigquery";
 
 const bigquery = new BigQuery({ projectId: PROJECT_ID });
 
-export async function getTable(
-  req: Request<{}, {}, TableRequest>,
+export async function getAggregation(
+  req: Request<{}, {}, AggregateRequest>,
   res: Response<TableResponse>
 ) {
   try {
     const requestData = req.body;
-    const query = getQuery(requestData);
-
+    const query = getAggregateQuery(
+      requestData.aggregateBy[0],
+      requestData.groupBy[0],
+      requestData.sortOrder,
+      requestData.size
+    );
     const options = {
       query: query,
       location: "europe-north1",
