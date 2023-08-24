@@ -4,6 +4,7 @@ import {
   MenuItem,
   Paper,
   Select,
+  SelectChangeEvent,
   Stack,
   Table,
   TableBody,
@@ -13,6 +14,7 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Typography,
   debounce,
 } from "@mui/material";
 import axios from "axios";
@@ -25,12 +27,14 @@ interface TableResponse {
   count: number;
 }
 
-/* const filter = createFilterOptions<FilterValues>(); */
-
 type Filter = {
   field: string;
-  values: string[];
+  values: string[] | number[];
 };
+
+interface UniqueValuesResponse {
+  data: string[] | number[];
+}
 
 const useGetTableData = (
   page: number,
@@ -71,6 +75,47 @@ const useGetTableData = (
   return { data, loading };
 };
 
+const useGetUniqueValues = (
+  size: number,
+  field?: string,
+  searchTerm?: string
+) => {
+  const [data, setData] = useState<UniqueValuesResponse>({ data: [] });
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        if (!field) {
+          setData({ data: [] });
+          return;
+        }
+        const response = await axios.post(
+          `${import.meta.env.VITE_PRODUCTION_API_URL}/unique-values`,
+          {
+            size,
+            field,
+            searchTerm,
+          }
+        );
+        if (!response.data) {
+          setData({ data: [] });
+        } else {
+          setData(response.data);
+        }
+      } catch {
+        setData({ data: [] });
+      } finally {
+        setLoading(false);
+      }
+      setLoading(false);
+    }
+    fetchData();
+  }, [field, searchTerm, size]);
+  return { data, loading };
+};
+
 const DataTable = () => {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(15);
@@ -78,29 +123,22 @@ const DataTable = () => {
   const [filterField, setFilterField] = useState<string | undefined>(undefined);
   const [filterValues, setFilterValues] = useState<Filter[]>();
 
-  /* const queryFilter: Filter | undefined = useMemo(
-    () => getFilters(filterField, filterValues),
-    [filterField, filterValues]
-  );
-
-  const defaultValues: readonly FilterValues[] = [
-    { label: "test", value: "test" },
-  ]; */
-
   const debounceSearchTerm = debounce(
     (event) => setSearchTerm(event.target.value ?? undefined),
     500
   );
-  const debounceSetFilterValue = debounce((event) => {
+
+  const handleFilterFieldChange = (event: SelectChangeEvent<string>) => {
     if (!filterField) return;
-    setFilterValues(
-      event.target.value
-        ? [{ field: filterField, values: [String(event.target.value)] }]
-        : undefined
-    );
-  }, 500);
+    const {
+      target: { value },
+    } = event;
+    setFilterValues([{ field: filterField, values: [value] }]);
+  };
 
   const { data } = useGetTableData(page, pageSize, searchTerm, filterValues);
+  const { data: valuesForField } = useGetUniqueValues(100, filterField);
+
   const columns = data && data.data[0] && Object.keys(data.data[0]);
 
   return (
@@ -129,14 +167,24 @@ const DataTable = () => {
             ))}
           </Select>
         </FormControl>
-        {filterField && (
-          <TextField
-            id="filterValue"
-            label="Filter value"
-            variant="outlined"
-            onChange={debounceSetFilterValue}
-            sx={{ backgroundColor: "white" }}
-          />
+        {filterField && valuesForField.data.length ? (
+          <FormControl fullWidth sx={{ width: "200px" }}>
+            <InputLabel id="select-filter-values-label">
+              Select filter values
+            </InputLabel>
+            <Select
+              labelId="select-filter-values-label"
+              label="Select filter values"
+              onChange={handleFilterFieldChange}
+              sx={{ backgroundColor: "white" }}
+            >
+              {Object.values(valuesForField.data)?.map((value) => (
+                <MenuItem value={value}>{value}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        ) : (
+          <Typography>loading...</Typography>
         )}
       </Stack>
       {data && columns ? (
@@ -187,7 +235,7 @@ const DataTable = () => {
             </Table>
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[5, 10, 25, 50, 100]}
             component="div"
             count={data?.count}
             rowsPerPage={pageSize}
