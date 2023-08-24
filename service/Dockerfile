@@ -1,9 +1,5 @@
 FROM node:16
 
-
-# Bundle app source
-WORKDIR /usr/src/app
-
 COPY . .
 RUN npm ci
 
