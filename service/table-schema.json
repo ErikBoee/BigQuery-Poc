@@ -1,0 +1,54 @@
+[
+    {
+      "name": "date",
+      "type": "TIMESTAMP"
+    },
+    {
+      "name": "Forfallsdato",
+      "type": "TIMESTAMP"
+    },
+    {
+      "name": "Betalingsbetingelser",
+      "type": "INTEGER"
+    },
+    {
+      "name": "supplier_name",
+      "type": "STRING"
+    },
+    {
+      "name": "supplier_org_number",
+      "type": "STRING"
+    },
+    {
+      "name": "Leverandør_ID",
+      "type": "INTEGER"
+    },
+    {
+      "name": "supplier_country",
+      "type": "STRING"
+    },
+    {
+      "name": "Artikkel",
+      "type": "STRING"
+    },
+    {
+      "name": "Volum",
+      "type": "FLOAT"
+    },
+    {
+      "name": "value",
+      "type": "FLOAT"
+    },
+    {
+      "name": "currency",
+      "type": "STRING"
+    },
+    {
+      "name": "Artikkelnr",
+      "type": "STRING"
+    },
+    {
+      "name": "Kontonr",
+      "type": "STRING"
+    }
+  ]
