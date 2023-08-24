@@ -28,7 +28,6 @@ export async function getTable(
 ) {
   try {
     const requestData = req.body;
-
     const query = getQuery(requestData);
 
     const options = {
