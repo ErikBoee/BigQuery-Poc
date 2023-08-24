@@ -28,10 +28,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const views_1 = require("./views");
+const cors_1 = __importDefault(require("cors"));
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 const app = (0, express_1.default)();
 const port = 8000;
+app.use((0, cors_1.default)()); // Use this after the variable declaration
 app.use(express_1.default.json());
 app.get("/", (req, res) => {
     res.send("Hello World " + process.env.GOOGLE_APPLICATION_CREDENTIALS);

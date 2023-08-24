@@ -1,11 +1,14 @@
 import express, { Request, Response } from "express";
 import { TableRequest, TableResponse, getTable } from "./views";
+import cors from "cors";
+
 import * as dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
 const port = 8000;
 
+app.use(cors()); // Use this after the variable declaration
 app.use(express.json());
 
 app.get("/", (req, res) => {
