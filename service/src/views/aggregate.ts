@@ -37,7 +37,7 @@ export async function getAggregation(
     const [rows] = await bigquery.query(options);
     res.send({ data: rows });
   } catch (error) {
-    console.error("Error ingesting data:", error);
-    console.dir(error, { depth: null });
+    console.error("Error fetching aggregated data:", error);
+    res.status(500).send();
   }
 }
