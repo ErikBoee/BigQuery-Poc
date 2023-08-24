@@ -6,6 +6,7 @@ type Filter = {
   field: string;
   values: string[];
 };
+type DateType = { value: string };
 
 export interface TableRequest {
   page: number;
@@ -14,7 +15,7 @@ export interface TableRequest {
   filters?: Filter[];
 }
 export interface TableResponse {
-  data: any[];
+  data: Record<string, string | number | DateType>[];
 }
 
 export const PROJECT_ID = "hackathon-poc-bigquery";
