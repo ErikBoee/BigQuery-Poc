@@ -4,6 +4,11 @@ import cors from "cors";
 
 import * as dotenv from "dotenv";
 import { AggregateRequest, getAggregation } from "./views/aggregate";
+import {
+  getUniqueValuesForField,
+  UniqueValuesRequest,
+  UniqueValuesResponse,
+} from "./views/uniqueValues";
 dotenv.config();
 
 const app = express();
@@ -27,6 +32,16 @@ app.post(
   "/aggregate",
   (req: Request<{}, {}, AggregateRequest>, res: Response) => {
     getAggregation(req, res);
+  }
+);
+
+app.post(
+  "/unique-values",
+  (
+    req: Request<{}, {}, UniqueValuesRequest>,
+    res: Response<UniqueValuesResponse>
+  ) => {
+    getUniqueValuesForField(req, res);
   }
 );
 

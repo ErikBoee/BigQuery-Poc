@@ -10,8 +10,8 @@ export interface AggregateRequest {
   sortIndex: number;
 }
 
-export interface TableResponse {
-  data: any[];
+export interface AggregateResponse {
+  data: Record<string, string>[];
 }
 
 export const PROJECT_ID = "hackathon-poc-bigquery";
@@ -20,7 +20,7 @@ const bigquery = new BigQuery({ projectId: PROJECT_ID });
 
 export async function getAggregation(
   req: Request<{}, {}, AggregateRequest>,
-  res: Response<TableResponse>
+  res: Response<AggregateResponse>
 ) {
   try {
     const requestData = req.body;

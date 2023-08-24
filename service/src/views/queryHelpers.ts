@@ -1,4 +1,5 @@
 import { PROJECT_ID, TableRequest } from "./table";
+import { UniqueValuesRequest } from "./uniqueValues";
 
 export const getTableQuery = (requestData: TableRequest) => {
   const baseQuery = `SELECT * FROM \`${PROJECT_ID}.SPEND.SMALLER_SPEND_V2\``;
@@ -61,4 +62,18 @@ export const getAggregateQuery = (
 ) => {
   const aggregation = `total_${aggregateBy}`;
   return `SELECT ${groupBy}, SUM(${aggregateBy}) AS ${aggregation} FROM SPEND.SMALLER_SPEND_V2 GROUP BY ${groupBy} ORDER BY ${aggregation} ${sortOrder} LIMIT ${size}`;
+};
+
+export const getUniqueValuesQuery = (
+  requestData: UniqueValuesRequest
+): string => {
+  const { field, size, searchTerm } = requestData;
+  let query = `SELECT DISTINCT ${field} FROM \`SPEND.SMALLER_SPEND_V2\``;
+
+  if (searchTerm) {
+    query += ` WHERE ${field} LIKE '%${searchTerm}%'`;
+  }
+
+  query += ` LIMIT ${size}`;
+  return query;
 };
