@@ -1,39 +1,56 @@
 import { PROJECT_ID, TableRequest } from "./table";
 
 export const getTableQuery = (requestData: TableRequest) => {
+  const baseQuery = `SELECT * FROM \`${PROJECT_ID}.SPEND.SMALLER_SPEND_V2\``;
+
   if (requestData.searchTerm && !requestData.filters) {
-    return `SELECT * FROM \`${PROJECT_ID}.SPEND.SMALLER_SPEND_V2\` WHERE LOWER(supplier_name) LIKE '%${requestData.searchTerm.toLowerCase()}%' LIMIT ${
-      requestData.pageSize
-    } OFFSET ${requestData.pageSize * requestData.page}`;
+    const query = `${baseQuery} WHERE LOWER(supplier_name) LIKE '%${requestData.searchTerm.toLowerCase()}%'`;
+    const countQuery = `SELECT COUNT(*) AS total_count FROM (${query})`;
+    const mainQuery = `${query} LIMIT ${requestData.pageSize} OFFSET ${
+      requestData.pageSize * requestData.page
+    }`;
+    return `${mainQuery}; ${countQuery};`;
   }
 
   if (!requestData.searchTerm && requestData.filters) {
-    return `SELECT * FROM \`${PROJECT_ID}.SPEND.SMALLER_SPEND_V2\` WHERE ${requestData.filters
+    const filtersQuery = requestData.filters
       .map(
         (filter) =>
           `LOWER(${filter.field}) IN (${filter.values
             .map((value) => `'${value.toLowerCase()}'`)
             .join(", ")})`
       )
-      .join(" AND ")} LIMIT ${requestData.pageSize} OFFSET ${
+      .join(" AND ");
+    const query = `${baseQuery} WHERE ${filtersQuery}`;
+    const countQuery = `SELECT COUNT(*) AS total_count FROM (${query})`;
+    const mainQuery = `${query} LIMIT ${requestData.pageSize} OFFSET ${
       requestData.pageSize * requestData.page
     }`;
+    return `${mainQuery}; ${countQuery};`;
   }
+
   if (requestData.searchTerm && requestData.filters) {
-    return `SELECT * FROM \`${PROJECT_ID}.SPEND.SMALLER_SPEND_V2\` WHERE LOWER(supplier_name) LIKE '%${requestData.searchTerm.toLowerCase()}%' AND ${requestData.filters
+    const filtersQuery = requestData.filters
       .map(
         (filter) =>
           `LOWER(${filter.field}) IN (${filter.values
             .map((value) => `'${value.toLowerCase()}'`)
             .join(", ")})`
       )
-      .join(" AND ")} LIMIT ${requestData.pageSize} OFFSET ${
+      .join(" AND ");
+    const query = `${baseQuery} WHERE LOWER(supplier_name) LIKE '%${requestData.searchTerm.toLowerCase()}%' AND ${filtersQuery}`;
+    const countQuery = `SELECT COUNT(*) AS total_count FROM (${query})`;
+    const mainQuery = `${query} LIMIT ${requestData.pageSize} OFFSET ${
       requestData.pageSize * requestData.page
     }`;
+    return `${mainQuery}; ${countQuery};`;
   }
-  return `SELECT * FROM \`${PROJECT_ID}.SPEND.SMALLER_SPEND_V2\` LIMIT ${
-    requestData.pageSize
-  } OFFSET ${requestData.pageSize * requestData.page}`;
+
+  const countQuery = `SELECT COUNT(*) AS total_count FROM (${baseQuery})`;
+  const mainQuery = `${baseQuery} LIMIT ${requestData.pageSize} OFFSET ${
+    requestData.pageSize * requestData.page
+  }`;
+  return `${mainQuery}; ${countQuery};`;
 };
 
 export const getAggregateQuery = (

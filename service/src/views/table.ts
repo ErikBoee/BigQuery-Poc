@@ -17,6 +17,7 @@ export interface TableRequest {
 
 export interface TableResponse {
   data: Record<string, string | number | DateType>[];
+  count: number;
 }
 
 export const PROJECT_ID = "hackathon-poc-bigquery";
@@ -30,15 +31,28 @@ export async function getTable(
   try {
     const requestData = req.body;
     const query = getTableQuery(requestData);
-
-    const options = {
-      query: query,
+    const [dataQuery, countQuery] = query.split(";");
+    const dataOptions = {
+      query: dataQuery,
       location: "europe-north1",
     };
-    const [rows] = await bigquery.query(options);
-    res.send({ data: rows });
+
+    const countOptions = {
+      query: countQuery,
+      location: "europe-north1",
+    };
+
+    const [dataResult, countResult] = await Promise.all([
+      bigquery.query(dataOptions),
+      bigquery.query(countOptions),
+    ]);
+
+    const rows = dataResult[0];
+    const totalCount = countResult[0][0].total_count;
+
+    res.send({ data: rows, count: totalCount });
   } catch (error) {
-    console.error("Error ingesting data:", error);
-    console.dir(error, { depth: null });
+    console.error("Error getting table data:", error);
+    res.status(500).send();
   }
 }
