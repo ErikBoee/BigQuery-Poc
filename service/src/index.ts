@@ -3,6 +3,7 @@ import { TableRequest, TableResponse, getTable } from "./views/table";
 import cors from "cors";
 
 import * as dotenv from "dotenv";
+import { AggregateRequest, getAggregation } from "./views/aggregate";
 dotenv.config();
 
 const app = express();
@@ -19,6 +20,13 @@ app.post(
   "/table",
   (req: Request<{}, {}, TableRequest>, res: Response<TableResponse>) => {
     getTable(req, res);
+  }
+);
+
+app.post(
+  "/aggregate",
+  (req: Request<{}, {}, AggregateRequest>, res: Response) => {
+    getAggregation(req, res);
   }
 );
 
