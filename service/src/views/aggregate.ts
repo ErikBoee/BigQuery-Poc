@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { BigQuery } from "@google-cloud/bigquery";
+import { bigquery } from "./bigQuery";
 import { getAggregateQuery } from "./queryHelpers";
 
 export interface AggregateRequest {
@@ -13,10 +13,6 @@ export interface AggregateRequest {
 export interface AggregateResponse {
   data: Record<string, string>[];
 }
-
-export const PROJECT_ID = "hackathon-poc-bigquery";
-
-const bigquery = new BigQuery({ projectId: PROJECT_ID });
 
 export async function getAggregation(
   req: Request<{}, {}, AggregateRequest>,

@@ -9,6 +9,11 @@ import {
   UniqueValuesRequest,
   UniqueValuesResponse,
 } from "./views/uniqueValues";
+import {
+  getFields,
+  GetFieldsRequest,
+  GetFieldsResponse,
+} from "./views/getFields";
 dotenv.config();
 
 const app = express();
@@ -25,6 +30,16 @@ app.post(
   "/table",
   (req: Request<{}, {}, TableRequest>, res: Response<TableResponse>) => {
     getTable(req, res);
+  }
+);
+
+app.post(
+  "/fields",
+  (
+    req: Request<{}, {}, GetFieldsRequest>,
+    res: Response<GetFieldsResponse>
+  ) => {
+    getFields(req, res);
   }
 );
 

@@ -1,4 +1,5 @@
-import { PROJECT_ID, TableRequest } from "./table";
+import { PROJECT_ID } from "./bigQuery";
+import { TableRequest } from "./table";
 import { UniqueValuesRequest } from "./uniqueValues";
 
 export const getTableQuery = (requestData: TableRequest) => {

@@ -1,5 +1,5 @@
-import { BigQuery } from "@google-cloud/bigquery";
 import { Request, Response } from "express";
+import { bigquery } from "./bigQuery";
 import { getUniqueValuesQuery } from "./queryHelpers";
 
 export interface UniqueValuesRequest {
@@ -11,10 +11,6 @@ export interface UniqueValuesRequest {
 export interface UniqueValuesResponse {
   data: string[] | number[];
 }
-
-export const PROJECT_ID = "hackathon-poc-bigquery";
-
-const bigquery = new BigQuery({ projectId: PROJECT_ID });
 
 export async function getUniqueValuesForField(
   req: Request<{}, {}, UniqueValuesRequest>,

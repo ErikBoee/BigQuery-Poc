@@ -1,5 +1,5 @@
-import { BigQuery } from "@google-cloud/bigquery";
 import { Request, Response } from "express";
+import { bigquery } from "./bigQuery";
 import { getTableQuery } from "./queryHelpers";
 
 type Filter = {
@@ -19,10 +19,6 @@ export interface TableResponse {
   data: Record<string, string | number | DateType>[];
   count: number;
 }
-
-export const PROJECT_ID = "hackathon-poc-bigquery";
-
-const bigquery = new BigQuery({ projectId: PROJECT_ID });
 
 export async function getTable(
   req: Request<{}, {}, TableRequest>,
