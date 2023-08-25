@@ -27,7 +27,7 @@ export interface AggregateRequest {
 }
 
 export interface AggregateResponse {
-  data: Record<string, string>[];
+  data: Record<string, string | number>[];
 }
 
 interface Field {
@@ -45,16 +45,17 @@ const useGetFields = () => {
   useEffect(() => {
     async function fetchFields() {
       try {
-        const response: GetFieldsResponse = await axios.post(
+        const response: { data: GetFieldsResponse } = await axios.post(
           `${import.meta.env.VITE_PRODUCTION_API_URL}/fields`,
           {
             dataTable: "SMALLER_SPEND_V2",
           }
         );
-        if (!response.fields) {
+        console.log("response", response);
+        if (!response.data) {
           setFields(undefined);
         } else {
-          setFields(response.fields);
+          setFields(response.data.fields);
         }
       } catch (error) {
         console.log("error", error);
@@ -69,6 +70,7 @@ const getAggregationData = async (
   req: AggregateRequest
 ): Promise<AggregateResponse | undefined> => {
   try {
+    console.log("req", req);
     const response = await axios.post(
       `${import.meta.env.VITE_PRODUCTION_API_URL}/aggregate`,
       req
@@ -89,23 +91,23 @@ const Aggregate = () => {
   const [data, setData] = useState<AggregateResponse | undefined>(undefined);
 
   const fields: Field[] | undefined = useGetFields();
-
+  console.log("fields", fields);
   return (
     <Stack direction="column" spacing={5}>
       <Stack direction="row" spacing={2}>
         <TextField
           id="size"
-          onChange={(val) => setSize(val)}
+          onChange={(event) => setSize(parseInt(event.target.value))}
           label="Size"
           inputProps={{ type: "number" }}
         />
         <FormControl fullWidth sx={{ width: "200px" }}>
-          <InputLabel id="select-label">Group by</InputLabel>
+          <InputLabel id="groupBy-label">Group by</InputLabel>
           <Select
-            labelId="select-label"
-            id="select"
+            labelId="groupBy-label"
+            id="groupBySelect"
             label="Group by"
-            onValueChange={(event) =>
+            onChange={(event) =>
               setGroupBy(
                 String(event.target.value) ? [String(event.target.value)] : []
               )
@@ -120,10 +122,10 @@ const Aggregate = () => {
           </Select>
         </FormControl>
         <FormControl fullWidth sx={{ width: "200px" }}>
-          <InputLabel id="select-label">Aggregate by</InputLabel>
+          <InputLabel id="aggBy-label">Aggregate by</InputLabel>
           <Select
-            labelId="select-label"
-            id="select"
+            labelId="aggBy-label"
+            id="aggBySelect"
             label="Aggregate by"
             onChange={(event) =>
               setAggregateBy(
@@ -204,7 +206,9 @@ const Aggregate = () => {
                           {row[groupBy[0]]}
                         </TableCell>
                         <TableCell key={Math.random()}>
-                          {row[`total_${aggregateBy[0]}`]}
+                          {row[`total_${aggregateBy[0]}`]
+                            ? Number(row[`total_${aggregateBy[0]}`]).toFixed(2)
+                            : "NaN"}
                         </TableCell>
                       </TableRow>
                     );
